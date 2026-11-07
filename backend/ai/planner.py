@@ -63,36 +63,31 @@ class TripPlanner:
       7. Ăn tối
       8. Vui chơi / tham quan buổi tối
 
-    Ngày đầy đủ nhắm tới 4 hoạt động buổi sáng, 3 buổi chiều, 2 buổi tối;
+    Ngày đầy đủ nhắm tới 2 hoạt động buổi sáng, 2 buổi chiều, 1 buổi tối;
     các bữa ăn, nghỉ và cà phê được xếp riêng. Ngày khởi hành được giảm tải.
     Vẫn giữ nguyên interface create_plan(...) để main.py không cần đổi.
     """
 
-    # Outing opportunities are placed across the usable day, with meals,
-    # rest and coffee breaks in between. They are a scheduling canvas, not a
-    # user-facing maximum: routing and opening hours decide what fits.
+    # Keep sightseeing to a comfortable pace, with meals, rest and coffee
+    # breaks between visits. Routing and opening hours may reduce this count.
     DAILY_SLOTS = [
         ("07:00", "07:45", "Ăn sáng", "Ăn uống", 45, "meal"),
         ("08:00", "08:45", "Khám phá buổi sáng", "Tham quan", 45, "outing_morning"),
-        ("08:55", "09:40", "Khám phá buổi sáng", "Tham quan", 45, "outing_morning"),
         ("09:45", "10:15", "Cafe buổi sáng", "Cafe", 30, "cafe"),
         ("10:25", "11:10", "Khám phá buổi sáng", "Tham quan", 45, "outing_morning"),
-        ("11:20", "12:05", "Khám phá buổi sáng", "Tham quan", 45, "outing_morning"),
         ("12:30", "13:15", "Ăn trưa", "Ăn uống", 45, "meal_lunch"),
         ("13:15", "13:30", "Nghỉ trưa tại khu vực tham quan", None, 15, "rest"),
         ("13:30", "14:15", "Khám phá buổi chiều", "Tham quan", 45, "outing_afternoon"),
-        ("14:25", "15:10", "Khám phá buổi chiều", "Tham quan", 45, "outing_afternoon"),
         ("15:10", "15:40", "Cafe / ăn nhẹ", "Cafe", 30, "cafe"),
         ("16:00", "16:45", "Khám phá cuối buổi chiều", "Tham quan", 45, "outing_afternoon"),
         ("17:00", "18:30", "Về khách sạn tắm rửa và nghỉ trước bữa tối", None, 90, "hotel_break"),
         ("18:30", "19:30", "Ăn tối", "Ăn uống", 60, "meal_dinner"),
         ("19:45", "20:30", "Khám phá buổi tối", "Vui chơi", 45, "outing_evening"),
-        ("20:40", "21:25", "Khám phá buổi tối", "Vui chơi", 45, "outing_evening"),
     ]
     ACTIVITY_SLOT_TARGETS = {
-        "morning": ({1, 2, 4, 5}, 4),
-        "afternoon": ({8, 9, 11}, 3),
-        "evening": ({14, 15}, 2),
+        "morning": ({1, 3}, 2),
+        "afternoon": ({6, 8}, 2),
+        "evening": ({11}, 1),
     }
 
     # Historical province names folded into the current 34 administrative
@@ -866,8 +861,8 @@ class TripPlanner:
                     "duration_minutes": duration_minutes,
                     "slot_index": slot_index,
                     "latest_start_time": self._format_minutes(
-                        (17 * 60) if slot_index == 11 and slot_role == "outing_afternoon" else
-                        (11 * 45) if slot_role == "outing_morning" else
+                        (17 * 60) if slot_index == 8 and slot_role == "outing_afternoon" else
+                        (11 * 60 + 45) if slot_role == "outing_morning" else
                         (16 * 60) if slot_role == "meal_lunch" else
                         (22 * 60 + 15) if slot_role == "meal_dinner" else
                         (10 * 60) if slot_role == "meal" else
@@ -1700,7 +1695,10 @@ class TripPlanner:
             return 0.20
         if ratio <= 2:
             return 0.45
-        return 0.75
+        # Keep the penalty responsive above 2x the category allowance. A
+        # fixed cap made a modestly priced restaurant and an extremely costly
+        # one tie, so the planner could not prefer the more affordable option.
+        return min(2.0, 0.45 + (ratio - 2) * 0.12)
 
     @staticmethod
     def _minutes(value):
@@ -1730,7 +1728,10 @@ class TripPlanner:
     @staticmethod
     def _open_during_slot(place, start_time, end_time, weekday=None):
         """Exclude a venue only when its published hours clearly miss the slot."""
-        hours = str(getattr(place, "opening_hours", "") or demo_opening_hours(place)).strip()
+        # Synthetic display hours are useful as an illustrative UI hint, but
+        # they are not evidence that a business is open or closed. Only reject
+        # a visit when the source provides actual opening hours.
+        hours = str(getattr(place, "opening_hours", "") or "").strip()
         if not hours or not start_time or not end_time:
             return True
         normalized = hours.casefold().replace(" ", "")
@@ -1831,6 +1832,11 @@ class TripPlanner:
             stop_words = {
                 "a", "an", "the", "diem", "tham", "quan", "du", "lich", "khu",
                 "cong", "vien", "center", "centre", "city", "danang", "da", "nang",
+                # Generic activity/category words do not identify a venue.
+                # Without these, nearby POIs named "Vui chơi 1" and
+                # "Vui chơi 2" (or "Thiên nhiên 1/2") were treated as aliases,
+                # exhausting otherwise distinct itinerary stops.
+                "vui", "choi", "thien", "nhien", "giai", "tri", "an", "uong",
             }
             first_tokens = {token for token in first_name.split() if len(token) > 1 and token not in stop_words}
             second_tokens = {token for token in second_name.split() if len(token) > 1 and token not in stop_words}

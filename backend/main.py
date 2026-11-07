@@ -1670,12 +1670,25 @@ def test_db():
         if hasattr(conn, "database"):
             total = conn["places"].estimated_document_count()
             conn["places"].find_one({}, {"_id": 1})
-            return {"database": "connected", "engine": "MongoDB", "total_places": total}
+            return {
+                "database": "connected", "engine": "MongoDB",
+                "total_places": total, "ready_staged_places": 0,
+                "available_places": total,
+            }
         cur = conn.cursor()
         cur.execute("SELECT COUNT(*) FROM places")
         total = cur.fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM place_crawl_staging WHERE status = 'ready_for_use'")
+        ready_staged = cur.fetchone()[0]
         cur.close()
-        return {"database": "connected", "total_places": total}
+        # The chat planner reads quality-reviewed crawl records from staging;
+        # keep that usable count visible so an empty legacy `places` table is
+        # not mistaken for an empty application database.
+        return {
+            "database": "connected", "total_places": total,
+            "ready_staged_places": ready_staged,
+            "available_places": total + ready_staged,
+        }
     finally:
         conn.close()
 
@@ -2361,9 +2374,9 @@ def chat_places(limit: int = Query(150, ge=1, le=500), gallery: bool = Query(Fal
                       -- Decorative rails should show attractions, not lodging
                       -- records accidentally tagged as sightseeing, or UI assets.
                       AND name !~* '(khách sạn|hotel|homestay|hostel|motel|nhà nghỉ|căn hộ|apartment|condotel|resort|villa)'
-                      AND COALESCE(image_source_url, '') !~* '(messenger-chat|facebook-chat|/logo([._/-]|$)|favicon|minus_icon|google-play|play\.google|app-store|apps\.apple|icon[_-](chat|logo|messenger))'
+                      AND COALESCE(image_source_url, '') !~* '(messenger-chat|facebook-chat|/logo([._/-]|$)|favicon|minus_icon|google-play|play[.]google|app-store|apps[.]apple|icon[_-](chat|logo|messenger))'
                       AND image_url !~* '(google[-_]?maps|/maps/|map[_-]?(image|anh|tile)|ban[-_]?do|openstreetmap|mapbox)'
-                      AND image_url !~* '(youtube|youtu\.be|ytimg|homestay|hotel|resort|bedroom|bed[_-]?room|nha-nghi|khach-san)'
+                      AND image_url !~* '(youtube|youtu[.]be|ytimg|homestay|hotel|resort|bedroom|bed[_-]?room|nha-nghi|khach-san)'
                       -- Crawlers sometimes assign social buttons or avatars as
                       -- a place photo (e.g. iVivu's Zalo icon for Cù Lao Xanh).
                       AND image_url !~* '(zalo|messenger|whatsapp|telegram|wechat|viber|tiktok|youtube|logo|avatar|favicon|placeholder|gravatar|icon[_-]?(chat|social|share))'
@@ -2782,9 +2795,6 @@ def create_chat_plan(req: ChatPlanRequest):
                 morning_extra = take_day_activity(start_time="10:00", end_time="11:15")
             morning_label = "Uống cafe" if morning_extra and fold_text(morning_extra["category"]) == fold_text("Cafe") else "Đi chơi tiếp"
             add_slot(morning_label, "10:00", "10:30", morning_extra)
-        if day_number > 1:
-            add_slot("Tham quan tiếp", "10:30", "11:30", take_day_activity(start_time="10:30", end_time="11:30"))
-
         add_slot("Ăn trưa", "11:30", "12:30", take_distinct(meals, used_meals, "11:30", "12:30"))
         add_slot("Về khách sạn nghỉ ngơi", "12:30", "13:30", stays[0])
         add_slot("Tham quan buổi chiều", "13:30", "15:00", take_day_activity(start_time="13:30", end_time="15:00"))
@@ -2792,12 +2802,11 @@ def create_chat_plan(req: ChatPlanRequest):
         if not market:
             market = take_distinct(snacks, used_meals, "15:00", "16:00")
         add_slot(market_label, "15:00", "16:00", market)
-        add_slot("Tiếp tục vui chơi, tham quan", "16:00", "17:00", take_day_activity(start_time="16:00", end_time="17:00"))
         add_slot("Về khách sạn nghỉ ngơi, tắm rửa", "17:00", "19:00", stays[0])
         add_slot("Ăn tối", "19:00", "20:00", take_dinner("19:00", "20:00"))
 
-        # Two distinct, preference-matched outings after dinner. A day visit to a
-        # market rules out another market, and related beaches/bridges aren't paired.
+        # Keep the evening to one preference-matched outing so the day does not
+        # become an overpacked list. A daytime market also rules out a second market.
         night_categories = list(night_categories_base)
         if market:
             night_categories = [category for category in night_categories if fold_text(category) != fold_text("Mua sắm")]
@@ -2822,20 +2831,11 @@ def create_chat_plan(req: ChatPlanRequest):
                     return place
             return None
 
-        first_night = take_night(night_categories, "20:00", "21:00")
-        if first_night:
-            label = "Uống cafe buổi tối" if _is_cafe_place(first_night) else "Dạo chơi buổi tối"
-            add_slot(label, "20:00", "21:00", first_night)
-        # Sightseeing can supply two different evening experiences (for example a
-        # riverside landmark and a bridge). Avoid a back-to-back double-cafe stop.
-        second_categories = [category for category in night_categories
-                             if not (first_night and _is_cafe_place(first_night)
-                                     and fold_text(category) == fold_text("Cafe"))]
-        second_night = take_night(second_categories, "21:00", "22:15")
-        if second_night:
-            label = "Uống cafe / thư giãn" if _is_cafe_place(second_night) else "Trải nghiệm buổi tối"
-            add_slot(label, "21:00", "22:15", second_night)
-        add_slot("Về khách sạn, kết thúc ngày", "22:30", "22:45", stays[0])
+        evening_place = take_night(night_categories, "20:00", "21:00")
+        if evening_place:
+            label = "Uống cafe buổi tối" if _is_cafe_place(evening_place) else "Dạo chơi buổi tối"
+            add_slot(label, "20:00", "21:00", evening_place)
+        add_slot("Về khách sạn, kết thúc ngày", "21:15", "21:30", stays[0])
         itinerary.append({"day": day_number, "title": f"Gợi ý ngày {day_number}", "schedule": schedule})
 
     hotel = stays[0]
@@ -2903,7 +2903,7 @@ def create_chat_plan(req: ChatPlanRequest):
                                   if not any(fold_text(place["category"]) in preference_aliases.get(fold_text(pref), {fold_text(pref)})
                                              for place in activities)],
         "planning_basis": "Địa chỉ và bản ghi ready_for_use trong DB; không sử dụng tọa độ.",
-        "price_note": "Buổi sáng 5 mục tính cả bữa trưa; buổi chiều 4 mục; sau bữa tối có tối đa hai hoạt động riêng biệt rồi về nơi lưu trú. Mỗi ngày tránh lặp nhóm điểm gần giống nhau; không lặp địa điểm hoặc xếp hai chợ trong ngày; nếu đã đi chợ thì bỏ ăn nhẹ riêng. Buổi tối ưu tiên sở thích và giờ hoạt động trong DB. Giá gốc lấy từ DB; lưu trú dùng giá trung bình mỗi đêm × số đêm × số người.",
+        "price_note": "Mỗi ngày có tối đa hai hoạt động tham quan buổi sáng, một hoạt động buổi chiều và một trải nghiệm buổi tối; các bữa ăn và thời gian nghỉ được xếp riêng. Mỗi ngày tránh lặp nhóm điểm gần giống nhau; không lặp địa điểm hoặc xếp hai chợ trong ngày; nếu đã đi chợ thì bỏ ăn nhẹ riêng. Buổi tối ưu tiên sở thích và giờ hoạt động trong DB. Giá gốc lấy từ DB; lưu trú dùng giá trung bình mỗi đêm × số đêm, không nhân số người.",
     }
     return {"success": True, "count": result["selected_activity_count"], "data": result}
 
@@ -5078,10 +5078,6 @@ def chat(req: ChatRequest):
                     if desired_time == "afternoon" and not (12 * 60 <= start_minute < 18 * 60):
                         continue
                     if desired_time == "evening":
-                        continue
-                    if add_named_intent and slot.get("place") is not None:
-                        # An addition can use a genuine vacancy only. Existing
-                        # stops require explicit “replace” wording to displace.
                         continue
                     slot_category = (slot.get("place") or {}).get("category")
                     if requested_poi.category in attraction_categories and slot_category not in attraction_categories and slot.get("place") is not None:

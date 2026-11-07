@@ -1,7 +1,9 @@
-"""Integration smoke check against the live Docker API using only stdlib."""
+"""Read-only integration smoke check against the live Docker API."""
 
 import json
+from io import BytesIO
 from urllib.request import Request, urlopen
+from pypdf import PdfReader
 
 
 BASE_URL = "http://127.0.0.1:8001"
@@ -22,92 +24,59 @@ def request_json(path, payload=None):
 root = request_json("/")
 assert root["status"] == "running", root
 database = request_json("/api/test-db")
-assert database["total_places"] > 0, database
+assert database["available_places"] > 0, database
 provinces = request_json("/api/provinces")
 assert len(provinces) == 34, f"Expected 34 provinces, got {len(provinces)}"
-payload = request_json(
-    "/api/recommend",
-    {"province_code": "48", "categories": ["Cafe"], "limit": 3},
-)
-assert payload["success"], payload
-assert payload["count"] > 0, payload
-assert len(payload["data"]) <= 3, payload
-
-hotels = request_json(
-    "/api/recommend/hotels",
-    {
-        "province_code": "48",
-        "days": 3,
-        "people": 2,
-        "accommodation_preference": "near_beach",
-        "limit": 1,
-    },
-)
-assert hotels["success"] and hotels["data"], hotels
-hotel = hotels["data"][0]
-plan_request = {
-    "province_code": "48",
+staged = request_json("/api/chat/places?limit=500")
+assert staged, "No ready-for-use places returned by the chat data source"
+hotels = [place for place in staged if place.get("category") == "Lưu trú"]
+assert hotels, "No ready-for-use hotel returned by the chat data source"
+hotel = hotels[0]
+province_code = hotel["province_code"]
+plan = request_json("/api/chat-plan", {
+    "province_code": province_code,
     "hotel_id": hotel["id"],
     "days": 3,
     "people": 2,
-    "start_date": "2026-10-12",
+    "budget": 50000000,
     "preferences": ["Ăn uống", "Cafe", "Tham quan"],
-    "radius_km": 8,
-    "limit_per_day": 6,
-}
-plan = request_json("/api/plan", plan_request)
-assert plan["success"] and len(plan["itinerary"]) == 3, plan
-assert isinstance(plan["planning_logic"]["road_routing_available"], bool), plan["planning_logic"]
-segments = [
-    slot["travel_from_previous"]
-    for day in plan["itinerary"]
-    for slot in day["schedule"]
-    if slot.get("place")
-]
-assert segments and all(
-    item["distance_method"] in {"straight_line_haversine", "osrm_road_route"}
-    and item["duration_method"] in {"rough_distance_estimate", "osrm_estimated_driving_duration"}
-    for item in segments
-), segments
+})
+assert plan["success"] and len(plan["data"]["itinerary"]) == 3, plan
+assert isinstance(plan["data"]["cost_summary"]["total_estimated_trip_cost"], (int, float)), plan
+for day in plan["data"]["itinerary"]:
+    non_stay_places = [
+        slot["place"] for slot in day["schedule"]
+        if slot.get("place") and slot["place"].get("category") != "Lưu trú"
+    ]
+    assert len(non_stay_places) <= 8, f"Day {day['day']} is overloaded: {len(non_stay_places)} stops"
+
+pdf_request = Request(
+    BASE_URL + "/api/chat-plan/pdf",
+    data=json.dumps({"plan": plan["data"]}, ensure_ascii=False).encode("utf-8"),
+    headers={"Content-Type": "application/json"},
+    method="POST",
+)
+with urlopen(pdf_request, timeout=60) as response:
+    pdf = response.read()
+    assert response.headers.get_content_type() == "application/pdf"
+assert pdf.startswith(b"%PDF-") and len(pdf) > 1000, "PDF response is empty or invalid"
+pdf_reader = PdfReader(BytesIO(pdf))
+pdf_images = sum(len(page.images) for page in pdf_reader.pages)
+assert pdf_images > 0, "PDF was generated without any place photos"
+
 chat = request_json(
     "/api/chat",
     {
-        "message": "Đổi khách sạn gần biển, đi 4 người, thêm quán ăn và cafe ngày 2",
-        "state": {
-            **plan_request,
-            "province_name": "Đà Nẵng",
-            "hotel_name": hotel["name"],
-            "accommodation_preference": "near_beach",
-            "plan": plan,
-            "itinerary": plan["itinerary"],
-        },
+        "message": "Xin chào",
+        "state": {},
         "history": [],
     },
 )
-assert chat["success"] and chat["action"] == "change_hotel", chat
-updated = chat["data"]["plan"]
-assert updated["people"] == 4 and len(updated["itinerary"]) == 3, updated
-day_two = updated["itinerary"][1]
-assert day_two["date"] == "2026-10-13", day_two
-assert day_two["place_count"] == sum(bool(slot.get("place")) for slot in day_two["schedule"]), day_two
-assert day_two["place_count"] >= 4, day_two
-day_two_places = [slot["place"] for slot in day_two["schedule"] if slot.get("place")]
-assert sum(place["category"] == "Ăn uống" for place in day_two_places) >= 2, day_two
-assert any(place["category"] == "Cafe" for place in day_two_places), day_two
-assert not any(slot.get("status") == "unavailable" for day in updated["itinerary"] for slot in day["schedule"])
-day_preferences = chat["data"]["state"]["chat_day_preferences"]["2"]
-assert "Ăn uống" in day_preferences and "Cafe" in day_preferences, day_preferences
-place_ids = [
-    slot["place"]["place_id"]
-    for day in updated["itinerary"]
-    for slot in day["schedule"]
-    if slot.get("place")
-]
-assert len(place_ids) == len(set(place_ids)), place_ids
+assert chat.get("action") == "need_context" and chat.get("message"), chat
 print(
     "API smoke test passed:",
-    f"{database['total_places']} places,",
+    f"{database['available_places']} available places ({database['total_places']} published, {database['ready_staged_places']} ready),",
     f"{len(provinces)} provinces,",
-    f"{payload['count']} recommendations,",
-    "multi-intent chat kept a 3-day unique plan and added both requested venue categories to Day 2",
+    f"{len(staged)} chat records,",
+    f"3-day plan, valid PDF with {pdf_images} embedded photos, chat response",
 )

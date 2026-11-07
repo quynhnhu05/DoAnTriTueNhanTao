@@ -91,6 +91,19 @@ def test_ba_na_aliases_are_not_scheduled_as_two_destinations():
     assert TripPlanner._same_place(sun_world, mountain)
 
 
+def test_nearby_places_with_same_category_words_are_not_duplicates():
+    first = Place(1, "Vui chơi 1", "Vui chơi", latitude=16.05, longitude=108.20)
+    second = Place(2, "Vui chơi 2", "Vui chơi", latitude=16.051, longitude=108.201)
+    nature = Place(3, "Thiên nhiên 1", "Thiên nhiên", latitude=16.05, longitude=108.20)
+    assert not TripPlanner._same_place(first, second)
+    assert not TripPlanner._same_place(first, nature)
+
+
+def test_unknown_opening_hours_do_not_block_a_place():
+    place = Place(1, "Attraction", "Tham quan")
+    assert TripPlanner._open_during_slot(place, "08:00", "09:00")
+
+
 def test_same_landmark_under_local_area_names_is_not_scheduled_twice():
     hai_van_gate = Place(1, "Hải Vân Quan", "Tham quan", latitude=16.19, longitude=108.13)
     hai_van_pass = Place(2, "Đèo Hải Vân", "Tham quan", latitude=16.1905, longitude=108.1304)
@@ -124,7 +137,9 @@ def test_road_route_duration_is_reserved_before_the_next_visit(monkeypatch):
          "latest_start_time": "10:45", "place": {"latitude": 2, "longitude": 2}},
     ]
     planner._route_and_schedule_day(schedule, 0, 0)
-    assert schedule[1]["start_time"] == "10:42"
+    assert schedule[1]["place"] is None
+    assert schedule[1]["status"] == "unavailable"
+    assert "quá dài" in schedule[1]["reason"]
 
 
 def test_attraction_type_changes_recommended_visit_duration():
@@ -157,7 +172,9 @@ def test_ba_na_gets_a_day_visit_with_lunch_break_and_evening_meal():
     ba_na_slot = next(slot for slot in schedule if (slot.get("place") or {}).get("name") == ba_na.name)
     assert ba_na_slot["type"] == "Khám phá Bà Nà cả ngày"
     assert ba_na_slot["duration_minutes"] == 390
-    assert ba_na_slot["place"]["onsite_breaks"][0]["type"] == "Ăn trưa và nghỉ tại khu du lịch"
+    assert ba_na_slot["place"]["onsite_breaks"][0]["type"] == (
+        "Ăn trưa tại Bà Nà onsite restaurant trong khu Sun World Bà Nà Hills"
+    )
     assert any(slot["type"] == "Trở về trung tâm và nghỉ ngơi" for slot in schedule)
     assert not any(slot.get("type") == "Ăn trưa" for slot in schedule)
     dinner_slot = next(slot for slot in schedule if slot.get("type") == "Ăn tối")
@@ -202,8 +219,8 @@ def test_trip_plan_keeps_a_practical_daily_sightseeing_pace():
         sum(1 for slot in day["schedule"] if slot.get("place") and slot.get("type", "").startswith(("Tham quan", "Vui chơi", "Thiên nhiên")))
         for day in result["itinerary"]
     ]
-    # Four daytime visits on full days, then a deliberately lighter departure day.
-    assert daily_sightseeing == [4, 4, 2]
+    # Five visits on full days, then a deliberately lighter departure day.
+    assert daily_sightseeing == [5, 5, 2]
 
 
 def test_plan_address_includes_known_ward_commune_and_province():
@@ -213,7 +230,7 @@ def test_plan_address_includes_known_ward_commune_and_province():
         address="12 Đường thử nghiệm, Đà Nẵng, Đà Nẵng",
     )
     assert TripPlanner(TourismRecommender([hotel]))._full_address(hotel) == (
-        "12 Đường thử nghiệm, Đà Nẵng, Phường Hải Châu 1"
+        "12 Đường thử nghiệm, Phường Hải Châu 1, Đà Nẵng"
     )
     assert display_ward_name("33_hoi_an_phuong") == "Phường Hoi An"
     assert display_ward_name("xa An Bình", "Xã") == "Xã An Bình"
@@ -328,14 +345,14 @@ def test_plan_has_arrival_departure_and_hotel_rest_blocks():
     first = result["itinerary"][0]["schedule"]
     last = result["itinerary"][-1]["schedule"]
     assert first[0]["type"] == "Gửi hành lý / làm thủ tục lưu trú"
-    assert any(slot["type"] == "Về khách sạn nghỉ trưa" and slot.get("return_to_hotel") for slot in first)
+    assert any(slot["type"] == "Nghỉ trưa tại khu vực tham quan" and not slot.get("return_to_hotel") for slot in first)
     assert any(slot["type"] == "Trả phòng / gửi hành lý" for slot in last)
     assert any(slot["type"] == "Về khách sạn tắm rửa và nghỉ trước bữa tối" for slot in first)
-    assert last[-1]["type"] == "Về khách sạn nhận hành lý và khởi hành"
+    assert last[-1]["type"] == "Nhận hành lý tại khách sạn và khởi hành"
     assert not any(slot.get("type") == "Vui chơi buổi tối" for slot in last)
 
 
-def test_tourist_shopping_keeps_supermarkets_but_ignores_small_groceries():
+def test_tourist_shopping_ignores_supermarkets_and_small_groceries():
     planner = TripPlanner(TourismRecommender([]))
     assert planner._is_generic_stop_placeholder(Place(1, "WinMart+", "Mua sắm"), "Mua sắm")
     assert planner._is_generic_stop_placeholder(Place(14, "Cửa hàng WinMart+ Vĩnh Thịnh", "Mua sắm"), "Mua sắm")
@@ -348,9 +365,9 @@ def test_tourist_shopping_keeps_supermarkets_but_ignores_small_groceries():
     assert not planner._is_tourism_candidate(Place(10, "Shoping Mall", "Mua sắm"))
     assert planner._is_tourism_candidate(Place(6, "Chợ Cồn", "Mua sắm"))
     assert planner._is_tourism_candidate(Place(7, "Vincom Plaza Đà Nẵng", "Mua sắm"))
-    assert planner._is_tourism_candidate(Place(8, "GO! Đà Nẵng", "Mua sắm"))
-    assert planner._is_tourism_candidate(Place(9, "Co.opmart Đà Nẵng", "Mua sắm"))
-    assert planner._is_tourism_candidate(Place(13, "BRG Mart", "Mua sắm", subcategory="Siêu thị"))
+    assert not planner._is_tourism_candidate(Place(8, "GO! Đà Nẵng", "Mua sắm"))
+    assert not planner._is_tourism_candidate(Place(9, "Co.opmart Đà Nẵng", "Mua sắm"))
+    assert not planner._is_tourism_candidate(Place(13, "BRG Mart", "Mua sắm", subcategory="Siêu thị"))
 
 
 def test_meal_planning_excludes_bars_and_beer_halls():
