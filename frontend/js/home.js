@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{ document.getElementById("startPlanning")?.addEventListener("click",()=>location.href="planner.html"); document.getElementById("explorePlaces")?.addEventListener("click",()=>location.href="places.html"); });

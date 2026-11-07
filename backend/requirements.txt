@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+pymongo>=4.9,<5
+pydantic
+python-dotenv

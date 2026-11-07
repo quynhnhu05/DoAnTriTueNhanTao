@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Travel Path">
+  <defs>
+    <linearGradient id="bg" x1="14" y1="8" x2="116" y2="124" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#218F80"/>
+      <stop offset="1" stop-color="#075E59"/>
+    </linearGradient>
+    <linearGradient id="route" x1="30" y1="37" x2="94" y2="95" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9E9"/>
+      <stop offset="1" stop-color="#DFF4E9"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="34" fill="url(#bg)"/>
+  <path d="M32 85c15-3 20-25 35-27 12-2 16 10 29 7" fill="none" stroke="url(#route)" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="32" cy="85" r="9" fill="#F5C65C" stroke="#FFF8E8" stroke-width="4"/>
+  <path d="M97 37c-10 0-18 8-18 18 0 14 18 31 18 31s18-17 18-31c0-10-8-18-18-18Z" fill="#FFF9E9"/>
+  <circle cx="97" cy="55" r="6" fill="#EFAE3A"/>
+  <path d="m56 29 4.2 10.8L71 44l-10.8 4.2L56 59l-4.2-10.8L41 44l10.8-4.2L56 29Z" fill="#FFE49B"/>
+</svg>

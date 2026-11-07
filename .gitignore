@@ -1,0 +1,51 @@
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+!.env.web.example
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node and desktop build dependencies
+node_modules/
+.pnpm-store/
+desktop/node_modules/
+frontend/node_modules/
+
+# Local generated data, crawled media, and database snapshots
+data/media/
+logs/
+backups/
+database/backups/
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+
+# Build artifacts and machine-specific files
+release/
+release-*/
+dist/
+build/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+
+# Generated review/audit artifacts
+outputs/*
+!outputs/Bao_cao_do_an_Travel_Path.pdf
+!outputs/Bao_cao_do_an_Travel_Path.tex
+!outputs/Bao_cao_Travel_Path_assets/
+outputs/Bao_cao_Travel_Path_assets/*
+!outputs/Bao_cao_Travel_Path_assets/**
+README_FIX.txt
+
+# Junction to the local crawled media store
+frontend/media/
+/data/

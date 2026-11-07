@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f8f7">
+  <title>Lịch sử plan — Travel Path</title>
+  <link rel="icon" type="image/svg+xml" href="assets/travel-path-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css?v=20261102-8">
+</head>
+<body class="account-page">
+  <header class="account-topbar">
+    <a class="account-brand" href="index.html"><img src="assets/travel-path-mark.svg" alt=""><span><b>Travel Path</b><small>Kế hoạch của bạn</small></span></a>
+    <nav class="admin-nav"><a class="account-home" href="index.html">Trang chính</a><a class="account-home" href="account.html">Tài khoản</a></nav>
+  </header>
+  <main class="history-main">
+    <section class="admin-heading">
+      <div><p class="account-eyebrow">HÀNH TRÌNH ĐÃ LƯU</p><h1>Lịch sử plan</h1><p>Các kế hoạch bạn đã tạo khi đăng nhập.</p></div>
+      <button id="refreshPlans" class="account-secondary" type="button">Làm mới</button>
+    </section>
+    <div id="historyMessage" class="account-message" role="status" aria-live="polite"></div>
+    <section class="history-layout">
+      <div id="planList" class="history-list"><p class="history-empty">Đang tải lịch sử…</p></div>
+      <article id="planDetail" class="history-detail"><div class="history-empty">Chọn một plan để xem chi tiết.</div></article>
+    </section>
+  </main>
+  <script src="js/api.js?v=20261106-account-scoped-state-v1"></script>
+  <script src="js/account-nav.js?v=20261102-3"></script>
+  <script src="js/plan-history.js?v=20261106-account-scoped-state-v1"></script>
+</body>
+</html>

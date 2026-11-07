@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f8f7">
+  <title>Tài khoản — Travel Path</title>
+  <link rel="icon" type="image/svg+xml" href="assets/travel-path-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css?v=20261102-8">
+</head>
+<body class="account-page">
+  <header class="account-topbar">
+    <a class="account-brand" href="index.html"><img src="assets/travel-path-mark.svg" alt=""><span><b>Travel Path</b><small>Trợ lý du lịch của bạn</small></span></a>
+    <a class="account-home" href="index.html">Về trang chủ</a>
+  </header>
+  <main class="account-main">
+    <section class="account-card" aria-labelledby="accountTitle">
+      <p class="account-eyebrow">✦ TRAVEL PATH</p>
+      <h1 id="accountTitle">Chào mừng bạn</h1>
+      <p id="accountIntro" class="account-intro">Đăng nhập bằng email để tiếp tục, hoặc đăng ký tài khoản mới.</p>
+      <div id="accountMessage" class="account-message" role="status" aria-live="polite"></div>
+      <div id="signedInPanel" class="signed-in-panel" hidden>
+        <p>Bạn đã đăng nhập là <strong id="signedInName"></strong></p>
+        <a id="adminLink" class="account-submit" href="admin.html" hidden>Trang quản trị</a>
+        <a id="historyLink" class="account-secondary account-history-link" href="history.html" hidden>Lịch sử plan</a>
+        <button id="logoutButton" class="account-secondary" type="button">Đăng xuất</button>
+      </div>
+      <form id="accountForm" autocomplete="off">
+        <label id="nameField" hidden>Tên đăng nhập<input id="username" name="username" minlength="3" maxlength="40" autocomplete="username" placeholder="Ví dụ: minhanh_23"></label>
+        <label>Email<input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="ban@email.com"></label>
+        <label id="passwordField">Mật khẩu<input id="password" name="travelPathCredential" type="password" required minlength="8" maxlength="256" autocomplete="off" readonly placeholder="Ít nhất 8 ký tự"></label>
+        <label id="confirmField" hidden>Nhập lại mật khẩu<input id="passwordConfirm" name="passwordConfirm" type="password" minlength="8" maxlength="256" autocomplete="new-password" readonly placeholder="Nhập lại mật khẩu"></label>
+        <label id="otpField" hidden>Mã OTP trong email<input id="otp" name="otp" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="one-time-code" placeholder="Nhập mã 6 chữ số"></label>
+        <div id="resetPasswordFields" hidden>
+          <label>Mật khẩu mới<input id="resetPassword" name="new_password" type="password" minlength="8" maxlength="256" autocomplete="new-password" readonly placeholder="Nhập mật khẩu mới"></label>
+          <label>Nhập lại mật khẩu mới<input id="resetPasswordConfirm" name="new_password_confirm" type="password" minlength="8" maxlength="256" autocomplete="new-password" readonly placeholder="Nhập lại mật khẩu mới"></label>
+        </div>
+        <button id="resendOtp" class="account-secondary" type="button" hidden>Gửi lại mã OTP</button>
+        <button id="submitButton" class="account-submit" type="submit">Đăng nhập</button>
+        <p id="forgotPasswordRow" class="account-switch forgot-password-row"><button id="forgotPasswordButton" type="button">Quên mật khẩu?</button></p>
+        <p id="forgotRegisterRow" class="account-switch forgot-register-row" hidden>Chưa có tài khoản? <button id="registerFromForgot" type="button">Đăng ký</button></p>
+      </form>
+      <p id="modeSwitch" class="account-switch">Chưa có tài khoản? <button id="switchButton" type="button">Đăng ký</button></p>
+      <p class="account-privacy">Mật khẩu được mã hóa trước khi lưu. Tài khoản chỉ dùng cho website Travel Path.</p>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/account.js?v=20261102-8"></script>
+</body>
+</html>

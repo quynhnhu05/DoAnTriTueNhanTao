@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f8f7">
+  <title>Quản lý tài khoản — Travel Path</title>
+  <link rel="icon" type="image/svg+xml" href="assets/travel-path-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css?v=20261102-8">
+</head>
+<body class="account-page">
+  <header class="account-topbar">
+    <a class="account-brand" href="index.html"><img src="assets/travel-path-mark.svg" alt=""><span><b>Travel Path</b><small>Khu vực quản trị</small></span></a>
+    <nav class="admin-nav"><a class="account-home" href="index.html">Website</a><a class="account-home" href="account.html">Tài khoản</a></nav>
+  </header>
+  <main class="admin-main">
+    <section class="admin-heading">
+      <div><p class="account-eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>Người dùng</h1><p>Xem tài khoản đã đăng ký và hoạt động đăng nhập gần nhất.</p></div>
+      <button id="refreshUsers" class="account-secondary" type="button">Làm mới</button>
+    </section>
+    <div id="adminMessage" class="account-message" role="status" aria-live="polite"></div>
+    <section class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Ngày đăng ký</th><th>Lần đăng nhập gần nhất</th><th>Số lần đăng nhập</th></tr></thead>
+        <tbody id="usersTable"><tr><td colspan="5">Đang tải danh sách…</td></tr></tbody>
+      </table>
+    </section>
+    <p class="admin-note">Chỉ quản trị viên đăng nhập mới xem được thông tin này. Mật khẩu không được hiển thị.</p>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/account-nav.js?v=20261102-3"></script>
+  <script src="js/admin.js?v=20261102-1"></script>
+</body>
+</html>

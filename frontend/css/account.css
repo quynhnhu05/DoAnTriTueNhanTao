@@ -1,0 +1,101 @@
+.assistant-nav-actions { display: flex; align-items: center; gap: 14px; }
+.account-link { max-width: 145px; overflow: hidden; text-overflow: ellipsis; padding: 10px 14px; border: 1px solid rgba(21,112,100,.16); border-radius: 13px; background: rgba(255,255,255,.8); color: #176e67; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.account-link:hover { background: #eaf7f2; border-color: #aad4ca; }
+button.account-link { font-family: inherit; cursor: pointer; }
+button.account-link:disabled { opacity: .65; cursor: wait; }
+.account-page { min-height: 100vh; background: radial-gradient(ellipse at 10% 8%,rgba(183,233,222,.62),transparent 33%),radial-gradient(ellipse at 92% 12%,rgba(255,224,174,.45),transparent 29%),#f6faf9; color: #183f3c; }
+.account-topbar { height: 82px; padding: 0 max(5%,calc((100% - 1240px)/2)); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.82); border-bottom: 1px solid #dce9e5; }
+.account-brand { display: flex; align-items: center; gap: 12px; }
+.account-brand img { width: 44px; height: 44px; }
+.account-brand b, .account-brand small { display: block; }
+.account-brand b { font-size: 19px; }
+.account-brand small { margin-top: 3px; color: #758985; font-size: 12px; }
+.account-home { padding: 10px 15px; border-radius: 12px; color: #176e67; font-size: 14px; font-weight: 750; }
+.account-topbar [hidden] { display: none !important; }
+.account-home:hover { background: #e9f5f1; }
+.account-main { min-height: calc(100vh - 82px); display: grid; place-items: center; padding: 38px 18px; }
+.account-card { width: min(460px,100%); padding: 36px; background: rgba(255,255,255,.94); border: 1px solid #dce9e5; border-radius: 27px; box-shadow: 0 24px 70px rgba(27,78,70,.12); }
+.account-eyebrow { margin: 0; color: #18877b; font-size: 11px; font-weight: 900; letter-spacing: .15em; }
+.account-card h1, .admin-heading h1 { margin: 9px 0; color: #164f49; font-size: 32px; letter-spacing: -.04em; }
+.account-intro { margin: 0 0 23px; color: #70837f; line-height: 1.6; font-size: 14px; }
+.account-card form { display: grid; gap: 15px; }
+.account-card #resetPasswordFields { display: grid; gap: 15px; }
+.account-card label { display: grid; gap: 7px; color: #355d57; font-size: 13px; font-weight: 750; }
+.account-card [hidden], .signed-in-panel[hidden], #adminLink[hidden] { display: none !important; }
+.account-card input { width: 100%; height: 48px; padding: 0 14px; border: 1px solid #d6e3de; border-radius: 12px; background: #fff; color: #183f3c; font: inherit; font-weight: 500; outline: 0; }
+.account-card input:focus { border-color: #1e9b8d; box-shadow: 0 0 0 3px rgba(30,155,141,.13); }
+.account-submit, .account-secondary { min-height: 46px; border: 0; border-radius: 12px; padding: 0 18px; font: inherit; font-weight: 800; cursor: pointer; }
+.account-submit { display: grid; place-items: center; width: 100%; margin-top: 4px; background: linear-gradient(135deg,#ffb83e,#f89918); color: #203c39; box-shadow: 0 9px 20px rgba(244,161,41,.2); }
+.account-submit:hover { filter: brightness(.97); transform: translateY(-1px); }
+.account-submit:disabled { opacity: .65; cursor: wait; }
+.account-secondary { background: #edf5f2; color: #27645c; }
+.account-switch { text-align: center; margin: 20px 0 0; color: #748782; font-size: 13px; }
+.account-switch button { border: 0; background: transparent; color: #0f8175; font: inherit; font-weight: 850; cursor: pointer; }
+.forgot-password-row { margin: 2px 0 0; text-align: right; }
+.forgot-register-row { margin: 8px 0 0; }
+.account-privacy, .admin-note { margin: 23px 0 0; color: #8a9995; font-size: 11px; line-height: 1.55; text-align: center; }
+.account-message { min-height: 0; color: #a23d2c; font-size: 13px; line-height: 1.45; }
+.account-message:not(:empty) { margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: #fff0ec; }
+.account-message.success { color: #16745f; background: #eaf8f1; }
+.signed-in-panel { display: grid; gap: 12px; margin-bottom: 15px; }
+.signed-in-panel p { margin: 0; color: #607b74; }
+.signed-in-panel .account-submit { text-decoration: none; }
+.signed-in-panel .account-secondary { width: 100%; }
+.admin-main { width: min(1200px,calc(100% - 36px)); margin: 55px auto; }
+.admin-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.admin-heading > div > p:last-child { color: #70837f; }
+.admin-table-wrap { overflow: auto; border: 1px solid #dce9e5; border-radius: 18px; background: #fff; box-shadow: 0 18px 55px rgba(27,78,70,.08); }
+.admin-table { width: 100%; border-collapse: collapse; min-width: 760px; text-align: left; }
+.admin-table th, .admin-table td { padding: 15px 18px; border-bottom: 1px solid #edf1ef; font-size: 13px; }
+.admin-table th { background: #f5faf8; color: #54716a; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.admin-table td { color: #345a54; }
+.admin-table td:first-child strong, .admin-table td:first-child small { display: block; }
+.admin-table td:first-child small { margin-top: 4px; color: #879690; }
+.role-badge { display: inline-block; padding: 5px 9px; border-radius: 999px; background: #edf5f1; color: #277364; font-weight: 800; font-size: 11px; }
+.role-badge.admin { background: #fff2dc; color: #a56813; }
+.admin-nav { display: flex; gap: 5px; }
+.account-history-link { display: grid; place-items: center; text-decoration: none; }
+.history-main { width: min(1240px,calc(100% - 36px)); margin: 48px auto; }
+.history-layout { display: grid; grid-template-columns: minmax(280px,.7fr) minmax(0,1.3fr); gap: 20px; align-items: start; }
+.history-list, .history-detail { border: 1px solid #dce9e5; border-radius: 19px; background: rgba(255,255,255,.94); box-shadow: 0 18px 55px rgba(27,78,70,.08); }
+.history-list { overflow: hidden; }
+.history-row { display: grid; grid-template-columns: 1fr 42px; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid #edf1ef; }
+.history-row:last-child { border-bottom: 0; }
+.history-open { display: grid; gap: 5px; padding: 12px; border: 0; border-radius: 12px; background: transparent; text-align: left; cursor: pointer; }
+.history-open:hover { background: #f2f8f5; }
+.history-open strong { color: #1c514a; font-size: 14px; }
+.history-open span { color: #4e766f; font-size: 12px; }
+.history-open small { color: #8a9995; font-size: 11px; }
+.history-delete { width: 36px; height: 36px; border: 0; border-radius: 10px; background: #fff1ed; color: #a23d2c; font-size: 23px; cursor: pointer; }
+.history-detail { min-height: 320px; padding: 24px; }
+.history-detail-head { padding: 7px 5px 20px; border-bottom: 1px solid #edf1ef; }
+.history-detail-head h2 { margin: 8px 0; color: #164f49; font-size: 25px; }
+.history-detail-head p:not(.account-eyebrow), .history-detail-head small { display: block; margin: 6px 0; color: #718580; font-size: 13px; line-height: 1.5; }
+.history-detail-head .account-submit { max-width: 250px; margin-top: 14px; text-decoration: none; }
+.history-days { display: grid; gap: 13px; margin-top: 17px; }
+.history-day { padding: 15px 17px; border: 1px solid #e6eeea; border-radius: 14px; background: #fbfdfc; }
+.history-day h3 { margin: 0 0 10px; color: #25645a; font-size: 15px; }
+.history-day ol { display: grid; gap: 9px; margin: 0; padding-left: 22px; }
+.history-day li { padding-left: 3px; color: #748782; font-size: 12px; }
+.history-day li time { display: inline-block; min-width: 110px; color: #56756d; font-weight: 750; }
+.history-day li b { color: #365f57; }
+.history-day li small { display: block; margin-top: 3px; color: #879690; }
+.history-empty { padding: 22px; color: #80918c; text-align: center; font-size: 13px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .assistant-nav-actions { gap: 8px; }
+  .account-link { padding: 8px 10px; font-size: 11px; }
+  .assistant-logo { width: 42px; height: 42px; }
+  .account-topbar { height: 70px; padding: 0 16px; }
+  .account-main { min-height: calc(100vh - 70px); padding: 22px 14px; }
+  .account-card { padding: 27px 22px; border-radius: 22px; }
+  .account-card h1 { font-size: 28px; }
+  .admin-main { margin: 32px auto; }
+  .admin-heading { align-items: flex-start; gap: 14px; }
+  .admin-heading h1 { font-size: 27px; }
+  .admin-heading > button { padding: 0 12px; }
+  .admin-nav { gap: 0; }
+  .history-main { margin: 28px auto; }
+  .history-layout { grid-template-columns: 1fr; }
+  .history-detail { padding: 17px; }
+  .history-day li time { display: block; min-width: 0; margin-bottom: 3px; }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dữ liệu crawl · Travel Path</title>
+  <link rel="stylesheet" href="css/style.css?v=crawl-preview-20261021-4">
+  <style>
+    .crawl-note{margin:0 0 20px;padding:15px 18px;border:1px solid #b8d8e8;border-radius:15px;background:#edf8fc;color:#28566b;line-height:1.55}
+    .crawl-controls{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;align-items:end;gap:18px;margin-bottom:22px}
+    .crawl-controls label{margin:0}.crawl-controls select{margin-top:8px}
+    .crawl-complete-toggle{display:flex;align-items:center;gap:9px;min-height:48px;color:var(--ink);font-weight:700;white-space:nowrap}.crawl-complete-toggle input{width:18px;height:18px;accent-color:#1673a5}
+    .crawl-meta{color:var(--muted);margin:0 0 14px}.crawl-card{position:relative}
+    .crawl-card .crawl-description{color:#5e6e7e;line-height:1.55;font-size:13px}
+    .crawl-card .crawl-price{font-weight:800;color:#173d5c}
+    .crawl-card .crawl-missing{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:999px;background:#fff5df;color:#7a5410;font-size:11px;font-weight:700}
+    .crawl-card .crawl-source{display:inline-block;margin-top:10px;color:#2878a1;text-decoration:underline;font-size:12px}
+    .crawl-empty{padding:40px;text-align:center;color:var(--muted)}
+    @media(max-width:700px){.crawl-controls{grid-template-columns:1fr}.crawl-complete-toggle{white-space:normal}.crawl-controls .btn{width:100%}}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="index.html"><span class="logo">✦</span><span><b>TRAVEL PATH</b><small>Trợ lý du lịch thông minh · Việt Nam</small></span></a>
+    <nav><a href="places.html">Địa điểm</a><a class="active" href="crawl-preview.html">Dữ liệu crawl</a><button id="languageToggle" class="lang-btn">EN</button></nav>
+  </header>
+  <main class="page places-page">
+    <div class="heading compact"><div><span class="eyebrow">XEM TRƯỚC DỮ LIỆU</span><h1>Dữ liệu crawl Đà Nẵng</h1><p>Ảnh, địa chỉ, giá và giờ mở cửa được lấy từ nội dung trang nguồn.</p></div></div>
+    <div class="crawl-note">Bản demo lấy dữ liệu Đà Nẵng mới nhất trong cơ sở dữ liệu. Mặc định chỉ hiển thị địa điểm đã có cả ảnh và giá; bỏ chọn bộ lọc để xem toàn bộ mục đã crawl.</div>
+    <div id="alertBox"></div>
+    <section class="card crawl-controls" aria-label="Điều khiển xem dữ liệu crawl Đà Nẵng">
+      <label>Danh mục<select id="category"><option value="">Tất cả danh mục</option></select></label>
+      <label class="crawl-complete-toggle"><input id="completeOnly" type="checkbox" checked> Chỉ hiện mục có ảnh và giá</label>
+      <button id="reload" class="btn primary">Tải dữ liệu</button>
+    </section>
+    <p id="summary" class="crawl-meta" aria-live="polite"></p>
+    <section id="places" class="cards" aria-live="polite"></section>
+    <footer class="data-attribution">Nguồn dữ liệu được ghi trong từng mục.</footer>
+  </main>
+  <script src="js/api.js?v=travel-path-home-20261012-1"></script>
+  <script src="js/crawl-preview.js?v=crawl-preview-20261022-lamdong"></script>
+</body>
+</html>
+
+
+

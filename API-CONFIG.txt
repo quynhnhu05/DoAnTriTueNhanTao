@@ -1,0 +1,10 @@
+# Frontend API contract
+
+Backend: http://127.0.0.1:8000
+
+Hotel preference values sent to POST /api/recommend/hotels:
+- Gần trung tâm -> near_center
+- Gần biển -> near_beach
+- Gần điểm tham quan -> near_attractions
+
+The UI does not display backend connection status.

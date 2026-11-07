@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <style>html.auth-pending body{visibility:hidden}</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f1">
+  <meta name="description" content="Travel Path giúp bạn lên lịch du lịch Việt Nam theo điểm đến, thời gian, sở thích và ngân sách.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Travel Path — Lên kế hoạch cho chuyến đi của bạn">
+  <meta property="og:description" content="Khám phá điểm đến và tạo lịch trình du lịch phù hợp với ngân sách, thời gian và sở thích của bạn.">
+  <title>Travel Path — Người bạn đồng hành cho chuyến đi</title>
+  <link rel="icon" type="image/svg+xml" href="assets/travel-path-mark.svg">
+  <link rel="stylesheet" href="css/style.css?v=20261029-coastal-v2">
+  <link rel="stylesheet" href="css/assistant.css?v=20261107-app-redesign-v11">
+  <link rel="stylesheet" href="css/account.css?v=20261102-8">
+  <link rel="stylesheet" href="css/travel-redesign.css?v=20261107-title-pdf-v16">
+</head>
+<body class="assistant-page travel-redesign">
+  <main class="travel-app">
+    <header class="travel-topbar assistant-nav">
+      <a class="travel-brand" href="index.html" aria-label="Travel Path - Trang chủ">
+        <img class="travel-brand-mark" src="assets/travel-path-mark.svg" alt="">
+        <span class="travel-brand-copy">
+          <strong>travel<span>path</span></strong>
+          <small>Hành trình của riêng bạn</small>
+        </span>
+      </a>
+      <div class="travel-topbar-center" aria-hidden="true">
+        <span class="travel-topbar-spark">✳</span>
+        <span>KHÁM PHÁ VIỆT NAM THEO CÁCH CỦA BẠN</span>
+      </div>
+      <nav class="assistant-nav-actions travel-account-actions" aria-label="Tài khoản">
+        <a id="accountLink" class="account-link travel-account-link" href="account.html">Đăng nhập</a>
+      </nav>
+    </header>
+
+    <section class="travel-workspace" aria-label="Không gian lập kế hoạch du lịch">
+      <aside id="leftGallery" class="assistant-gallery gallery-left travel-photo-rail" aria-label="Phong cảnh du lịch Việt Nam"></aside>
+
+      <section class="assistant-app-shell travel-chat-shell">
+        <div class="travel-workspace-heading">
+          <div>
+            <span class="travel-eyebrow">TRỢ LÝ DU LỊCH CỦA BẠN</span>
+            <h1>Lên đường theo cách bạn muốn.</h1>
+            <p>Chia sẻ ý tưởng chuyến đi — Travel Path sẽ cùng bạn sắp xếp từng ngày.</p>
+          </div>
+          <div class="travel-status"><i aria-hidden="true"></i> Sẵn sàng đồng hành</div>
+        </div>
+      <div class="travel-starters" aria-label="Gợi ý bắt đầu">
+        <span>THỬ NHANH</span>
+        <button type="button" data-travel-prompt="Đà Nẵng 3 ngày, 2 người, ngân sách 5 triệu, thích biển và ẩm thực">🌊 Đà Nẵng · 3 ngày</button>
+        <button type="button" data-travel-prompt="Huế 2 ngày, 2 người, ngân sách 3 triệu, thích tham quan và món địa phương">🏛️ Huế · 2 ngày</button>
+        <button type="button" data-travel-prompt="Đà Lạt 3 ngày, 2 người, ngân sách 5 triệu, thích thiên nhiên và cà phê">🌿 Đà Lạt · Thiên nhiên</button>
+      </div>
+
+        <section class="assistant-window travel-chat-window" aria-label="Trò chuyện với Travel Path">
+          <div class="travel-chat-toolbar">
+            <div class="travel-chat-title">
+              <span class="travel-chat-orb" aria-hidden="true">✦</span>
+              <span><strong>Cuộc trò chuyện</strong><small>Điểm đến · Ngân sách · Sở thích</small></span>
+            </div>
+            <span class="travel-chat-live"><i aria-hidden="true"></i> TRỰC TUYẾN</span>
+          </div>
+
+          <div id="assistantMessages" class="assistant-messages travel-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+
+          <form id="assistantForm" class="assistant-composer travel-composer">
+            <label class="sr-only" for="assistantInput">Tin nhắn của bạn</label>
+            <textarea id="assistantInput" rows="1" maxlength="1200" placeholder="Ví dụ: Đà Nẵng 3 ngày, 2 người, ngân sách 5 triệu…" autocomplete="off" required></textarea>
+            <div class="composer-bottom travel-composer-bottom">
+              <span><b aria-hidden="true">↵</b> Gửi · Shift + Enter để xuống dòng</span>
+              <button id="assistantSend" type="submit" aria-label="Gửi tin nhắn"><span>Gửi tin nhắn</span><b aria-hidden="true">↗</b></button>
+            </div>
+          </form>
+        </section>
+
+        <footer class="assistant-footer travel-footer"><span>TRAVEL PATH</span><i aria-hidden="true">·</i> Quỳnh Như · Trúc Ny · Đồ án Trí tuệ nhân tạo</footer>
+      </section>
+
+      <aside id="rightGallery" class="assistant-gallery gallery-right travel-photo-rail" aria-label="Phong cảnh du lịch Việt Nam"></aside>
+    </section>
+  </main>
+
+  <script src="js/api.js?v=20261106-account-scoped-state-v1"></script>
+  <script src="js/auth-gate.js?v=20261106-account-scoped-state-v1"></script>
+  <script src="js/account-nav.js?v=20261102-3"></script>
+  <script src="js/assistant.js?v=20261107-budget-balance-v18"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: tourism_postgres_doantrituenhantao
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tourism_db}
+      POSTGRES_USER: ${DB_USER:-tourism_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tourism_password}
+
+    ports:
+      - "${POSTGRES_BIND:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+
+    volumes:
+      - tourism_postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/migrate_provinces_34.sql:/docker-entrypoint-initdb.d/02-provinces-34.sql:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tourism_user} -d ${DB_NAME:-tourism_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tourism_ollama_doantrituenhantao
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_KEEP_ALIVE: 30m
+      OLLAMA_NUM_PARALLEL: 1
+    ports:
+      - "${OLLAMA_BIND:-127.0.0.1}:${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - tourism_ollama_data:/root/.ollama
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: tourism_backend_doantrituenhantao
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-8001}:8000"
+    environment:
+      DATA_BACKEND: ${DATA_BACKEND:-postgres}
+      MONGODB_URI: ${MONGODB_URI:-}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-travel_path}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-tourism_db}
+      DB_USER: ${DB_USER:-tourism_user}
+      DB_PASSWORD: ${DB_PASSWORD:-tourism_password}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+      AUTH_SESSION_DAYS: ${AUTH_SESSION_DAYS:-7}
+      AUTH_OTP_SECRET: ${AUTH_OTP_SECRET:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+      SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen3.5:4b
+      OSRM_URL: ${OSRM_URL:-https://router.project-osrm.org}
+      MEDIA_DIR: /app/media
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      GEMINI_CRAWL_MODEL: ${GEMINI_CRAWL_MODEL:-gemini-3.8-flash}
+      GEMINI_SEARCH_MODEL: ${GEMINI_SEARCH_MODEL:-gemini-3.8-flash}
+      GEMINI_FALLBACK_MODEL: ${GEMINI_FALLBACK_MODEL:-gemini-3.5-flash-lite}
+      GEMINI_IMAGE_SEARCH_LIMIT: ${GEMINI_IMAGE_SEARCH_LIMIT:-20}
+    volumes:
+      - tourism_media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    command: ["sh", "-c", "python /app/data_collector/migrate_place_images.py && uvicorn main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/test-db', timeout=4)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+      start_period: 20s
+
+  price-crawler:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: tourism_price_crawler_doantrituenhantao
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: ${MONGODB_URI:-}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-travel_path}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-tourism_db}
+      DB_USER: ${DB_USER:-tourism_user}
+      DB_PASSWORD: ${DB_PASSWORD:-tourism_password}
+      MEDIA_DIR: /app/media
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      GEMINI_CRAWL_MODEL: ${GEMINI_CRAWL_MODEL:-gemini-3.8-flash}
+      GEMINI_SEARCH_MODEL: ${GEMINI_SEARCH_MODEL:-gemini-3.8-flash}
+      GEMINI_FALLBACK_MODEL: ${GEMINI_FALLBACK_MODEL:-gemini-3.5-flash-lite}
+      GEMINI_IMAGE_SEARCH_LIMIT: ${GEMINI_IMAGE_SEARCH_LIMIT:-20}
+    volumes:
+      - tourism_media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "/app/data_collector/run_real_data_crawler.py"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    container_name: tourism_frontend_doantrituenhantao
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_BIND:-127.0.0.1}:${FRONTEND_PORT:-8080}:80"
+    volumes:
+      - tourism_media:/usr/share/nginx/html/media:ro
+      - ./data/media/crawled:/opt/crawled-media:ro
+
+volumes:
+  tourism_postgres_data:
+  tourism_ollama_data:
+  tourism_media:

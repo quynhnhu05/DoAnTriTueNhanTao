@@ -1,0 +1,98 @@
+{
+  "name": "he-thong-tro-ly-du-lich-thong-minh",
+  "version": "1.0.5",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "description": "Website trợ lý du lịch thông minh Travel Path",
+  "main": "desktop/main.js",
+  "scripts": {
+    "postinstall": "node node_modules/electron/install.js",
+    "start": "docker compose -p doantrituenhantao up -d --build",
+    "start:desktop": "electron .",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "vn.aismarttravel.desktop",
+    "productName": "Tro Ly Du Lich Thong Minh",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "desktop/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "docker-compose.yml",
+        "to": "travel-runtime/docker-compose.yml"
+      },
+      {
+        "from": "requirements.txt",
+        "to": "travel-runtime/requirements.txt"
+      },
+      {
+        "from": "docker",
+        "to": "travel-runtime/docker",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**"
+        ]
+      },
+      {
+        "from": "backend",
+        "to": "travel-runtime/backend",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/.env*"
+        ]
+      },
+      {
+        "from": "frontend",
+        "to": "travel-runtime/frontend",
+        "filter": [
+          "*.html",
+          "assets/**/*",
+          "css/**/*",
+          "js/**/*",
+          "data/**/*"
+        ]
+      },
+      {
+        "from": "database",
+        "to": "travel-runtime/database",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**"
+        ]
+      },
+      {
+        "from": "data_collector",
+        "to": "travel-runtime/data_collector",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "Tro-Ly-Du-Lich-Thong-Minh-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Trợ lý du lịch thông minh"
+    }
+  }
+}

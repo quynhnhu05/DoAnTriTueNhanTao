@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
+  <title>Trợ lý du lịch thông minh</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#142d48;background:#f3f8fb;font-synthesis:none}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px;background:radial-gradient(ellipse at 88% 10%,#d9f0f6 0,transparent 42%),linear-gradient(145deg,#f7fafc,#eaf3f8)}
+    main{width:min(100%,520px);padding:34px;background:#fff;border:1px solid #dce8ef;border-radius:28px;box-shadow:0 24px 75px #173d5720}
+    .brand{display:flex;align-items:center;gap:15px}.mark{width:58px;height:58px;border-radius:19px;background:linear-gradient(145deg,#147da0,#123f70);color:white;display:grid;place-items:center;font-size:30px;box-shadow:0 12px 25px #16749b33}
+    h1{font-size:22px;margin:0 0 5px}p{margin:0;color:#62788d;line-height:1.6}.status{margin-top:28px;display:flex;align-items:center;gap:11px;font-weight:650;color:#17668a}.spinner{height:18px;width:18px;border:3px solid #cee7f0;border-top-color:#1684aa;border-radius:50%;animation:spin .8s linear infinite;flex:none}.error .spinner{display:none}@keyframes spin{to{transform:rotate(360deg)}}
+    pre{display:none;max-height:150px;overflow:auto;white-space:pre-wrap;background:#f6f8fa;color:#75413d;border:1px solid #f1d9d5;padding:12px;border-radius:12px;font:12px/1.5 Consolas,monospace}.error pre{display:block}.actions{display:none;gap:10px;margin-top:16px}.error .actions{display:flex}button{border:0;border-radius:12px;padding:12px 18px;font:700 14px inherit;cursor:pointer}.primary{background:#f9a51b;color:#142d48}.secondary{background:#edf4f7;color:#38536c}.hint{font-size:13px;margin-top:20px}.error .hint{display:none}
+  </style>
+</head>
+<body>
+  <main id="card">
+    <div class="brand"><div class="mark" aria-hidden="true">✦</div><div><h1>Trợ lý du lịch thông minh</h1><p>Xây dựng hệ thống trợ lý du lịch thông minh</p></div></div>
+    <div class="status"><span class="spinner" aria-hidden="true"></span><span id="message">Đang kết nối các dịch vụ…</span></div>
+    <pre id="details"></pre>
+    <div class="actions"><button class="primary" id="retry">Thử lại</button><button class="secondary" id="quit">Thoát</button></div>
+    <p class="hint">Ứng dụng đang chuẩn bị dữ liệu địa điểm, lịch trình và trợ lý AI lần đầu.</p>
+  </main>
+  <script src="startup.js"></script>
+</body>
+</html>
