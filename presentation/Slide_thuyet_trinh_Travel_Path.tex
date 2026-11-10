@@ -1,0 +1,534 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% Compile with XeLaTeX (Overleaf: Menu > Compiler > XeLaTeX).
+% Keep this file beside the assets folder.
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Heros}
+\setsansfont{TeX Gyre Heros}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=travelgreen}
+
+\definecolor{travelgreen}{HTML}{14685E}
+\definecolor{travelgold}{HTML}{F4A11A}
+\definecolor{softgreen}{HTML}{EAF5EF}
+\definecolor{softgold}{HTML}{FFF5DE}
+\definecolor{ink}{HTML}{253C3A}
+\definecolor{muted}{HTML}{657B78}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{structure}{fg=travelgreen}
+\setbeamercolor{frametitle}{fg=travelgreen,bg=white}
+\setbeamercolor{title}{fg=travelgreen}
+\setbeamercolor{subtitle}{fg=muted}
+\setbeamercolor{block title}{fg=white,bg=travelgreen}
+\setbeamercolor{block body}{fg=ink,bg=softgreen}
+\setbeamercolor{alerted text}{fg=travelgold}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{
+    \begin{beamercolorbox}[wd=.78\paperwidth,ht=2.6ex,dp=1.1ex,leftskip=1em]{author in head/foot}
+      \color{muted}\scriptsize Travel Path \textbullet\ Đồ án Trí tuệ nhân tạo
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[wd=.22\paperwidth,ht=2.6ex,dp=1.1ex,rightskip=1em plus1fil]{date in head/foot}
+      \color{travelgreen}\scriptsize \insertframenumber/20
+    \end{beamercolorbox}
+  }
+}
+\setbeamertemplate{itemize item}{\color{travelgold}\small$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\color{travelgreen}\scriptsize$\bullet$}
+\setlength{\parskip}{3pt}
+\setlength{\leftmargini}{1.2em}
+\setbeamersize{text margin left=0.8cm,text margin right=0.8cm}
+
+\tikzset{
+  box/.style={draw=travelgreen,rounded corners=5pt,fill=softgreen,align=center,minimum height=0.82cm,text width=2.8cm},
+  goldbox/.style={draw=travelgold,rounded corners=5pt,fill=softgold,align=center,minimum height=0.82cm,text width=2.8cm},
+  db/.style={draw=travelgreen,ellipse,fill=softgold,align=center,minimum height=0.75cm,text width=2.7cm},
+  arr/.style={-{Latex[length=2.5mm]},thick,draw=travelgreen},
+  dashedarr/.style={-{Latex[length=2.3mm]},thick,dashed,draw=muted}
+}
+\newcommand{\asset}[2][]{\includegraphics[#1]{assets/#2}}
+\newcommand{\key}[1]{\textcolor{travelgreen}{\textbf{#1}}}
+
+\title[Travel Path]{XÂY DỰNG HỆ THỐNG TRỢ LÝ DU LỊCH\\THÔNG MINH VỚI AI}
+\subtitle{Báo cáo thuyết trình đồ án Trí tuệ nhân tạo}
+\author{Bùi Thị Quỳnh Như \and Cao Trúc Ny}
+\institute{Trường Đại học Kiến trúc Đà Nẵng\\Khoa Công nghệ thông tin -- Lớp 23CT4}
+\date{Đà Nẵng -- 2026}
+
+\begin{document}
+
+% 1
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[softgreen] (current page.south west) rectangle (current page.north east);
+    \fill[travelgreen] ([xshift=9.3cm]current page.south west) rectangle (current page.north east);
+    \fill[travelgold] ([xshift=9.15cm]current page.south west) rectangle ([xshift=9.42cm]current page.north east);
+  \end{tikzpicture}
+  \vspace{0.3cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    {\color{travelgreen}\small\bfseries ĐỒ ÁN TRÍ TUỆ NHÂN TẠO}\\[0.45cm]
+    {\color{ink}\LARGE\bfseries XÂY DỰNG HỆ THỐNG\\TRỢ LÝ DU LỊCH\\THÔNG MINH VỚI AI}\\[0.4cm]
+    {\large\color{muted}Travel Path -- Lên lịch trình theo nhu cầu,\\sở thích và ngân sách}
+    \vfill
+    \small
+    \textbf{Giảng viên hướng dẫn:} TS. Đỗ Phúc Hào\\
+    \textbf{Sinh viên:} Bùi Thị Quỳnh Như -- 2351220202\\
+    \hspace{1.66cm}Cao Trúc Ny -- 2251220201
+    \column{0.34\textwidth}
+    \centering
+    \vspace{0.5cm}
+    \asset[width=0.67\linewidth]{logo_truong.png}\\[0.5cm]
+    {\color{white}\Huge\bfseries TRAVEL\\PATH}\\[0.2cm]
+    {\color{white}\large Trợ lý du lịch của bạn}
+  \end{columns}
+\end{frame}
+
+% 2
+\begin{frame}{Nội dung trình bày}
+  \framesubtitle{Ba phần chính của đồ án}
+  \begin{columns}[T,onlytextwidth]
+    \column{.32\textwidth}
+      \begin{block}{01 · Tổng quan}
+        Bối cảnh, bài toán, mục tiêu và phạm vi.
+      \end{block}
+    \column{.32\textwidth}
+      \begin{block}{02 · Phương pháp}
+        Kiến trúc, dữ liệu, AI hội thoại, gợi ý và tính chi phí.
+      \end{block}
+    \column{.32\textwidth}
+      \begin{block}{03 · Kết quả}
+        Giao diện, kiểm chứng, giới hạn và hướng phát triển.
+      \end{block}
+  \end{columns}
+  \vspace{0.5cm}
+  \begin{center}
+    \Large\color{travelgreen}\bfseries
+    Từ câu chat tự nhiên đến một lịch trình có thể xem,\\điều chỉnh và lưu theo tài khoản.
+  \end{center}
+\end{frame}
+
+% 3
+\begin{frame}{Bối cảnh và lý do chọn đề tài}
+  \begin{columns}[T,onlytextwidth]
+    \column{.57\textwidth}
+      \begin{itemize}
+        \item Lập kế hoạch du lịch đòi hỏi phối hợp điểm đến, thời gian, lưu trú, ăn uống và chi phí.
+        \item Thông tin thường nằm ở nhiều nguồn; người dùng phải tự đối chiếu và sắp xếp.
+        \item Khi đổi ngân sách, số ngày hoặc sở thích, lịch trình cần được cập nhật đồng bộ.
+      \end{itemize}
+      \vspace{0.2cm}
+      \begin{alertblock}{Lý do chọn đề tài}
+        Bài toán kết hợp xử lý ngôn ngữ tự nhiên, hệ gợi ý, dữ liệu địa điểm và tối ưu lịch trình.
+      \end{alertblock}
+    \column{.39\textwidth}
+      \begin{tikzpicture}[node distance=0.32cm]
+        \node[box,text width=3.7cm] (a) {Nhiều nguồn thông tin};
+        \node[box,below=of a,text width=3.7cm] (b) {Nhiều ràng buộc chuyến đi};
+        \node[goldbox,below=of b,text width=3.7cm] (c) {Cần một quy trình lập kế hoạch thống nhất};
+        \draw[arr] (a)--(b);
+        \draw[arr] (b)--(c);
+      \end{tikzpicture}
+  \end{columns}
+  \vspace{0.25cm}
+  {\scriptsize\color{muted}Căn cứ bối cảnh được trích dẫn trong báo cáo: Chiến lược phát triển du lịch Việt Nam đến năm 2030; thống kê du lịch; Luật Du lịch 2017.}
+\end{frame}
+
+% 4
+\begin{frame}{Bài toán và mục tiêu}
+  \begin{block}{Đầu vào}
+    \centering Điểm đến $d$ \quad Số ngày $n$ \quad Số người $p$ \quad Ngân sách $b$ \quad Sở thích $S$
+  \end{block}
+  \begin{center}
+    \begin{tikzpicture}[node distance=0.5cm]
+      \node[box,text width=2.45cm] (i) {Yêu cầu chuyến đi};
+      \node[box,right=of i,text width=2.45cm] (x) {Diễn giải và tra cứu};
+      \node[goldbox,right=of x,text width=2.45cm] (o) {Lịch trình + chi phí};
+      \draw[arr] (i)--(x);
+      \draw[arr] (x)--(o);
+    \end{tikzpicture}
+  \end{center}
+  \begin{itemize}
+    \item Tạo lịch trình theo ngày, khung giờ và sở thích.
+    \item Ước lượng chi phí từ dữ liệu sẵn có; chỉ rõ khoản thiếu hoặc vượt ngân sách.
+    \item Cho phép điều chỉnh, lưu lịch sử riêng cho tài khoản và xuất PDF.
+  \end{itemize}
+\end{frame}
+
+% 5
+\begin{frame}{Phạm vi chức năng}
+  \begin{columns}[T,onlytextwidth]
+    \column{.49\textwidth}
+      \begin{block}{Phía người dùng}
+        \begin{itemize}
+          \item Đăng ký OTP email, đăng nhập, khôi phục mật khẩu.
+          \item Tạo và điều chỉnh plan bằng hội thoại.
+          \item Xem chi phí, lưu lịch sử, tải PDF, xóa plan.
+        \end{itemize}
+      \end{block}
+    \column{.49\textwidth}
+      \begin{block}{Phía hệ thống}
+        \begin{itemize}
+          \item Tra cứu dữ liệu địa điểm và giá.
+          \item Xếp lịch theo ngày, giờ hoạt động và khoảng cách.
+          \item Phân quyền người dùng và quản trị viên.
+        \end{itemize}
+      \end{block}
+  \end{columns}
+  \begin{alertblock}{Giới hạn cần nêu}
+    Giá và địa chỉ phụ thuộc dữ liệu nguồn; lịch trình là gợi ý, cần người dùng xác nhận trước chuyến đi.
+  \end{alertblock}
+\end{frame}
+
+% 6
+\begin{frame}{Tác nhân và các ca sử dụng}
+  \centering
+  \begin{tikzpicture}[node distance=0.45cm and 0.8cm]
+    \node[box,text width=2.5cm] (user) {Người dùng\\\scriptsize chat · tạo plan · lưu · tải PDF};
+    \node[box,right=of user,yshift=0.75cm,text width=2.7cm] (auth) {Tài khoản\\\scriptsize đăng ký · OTP · đăng nhập};
+    \node[box,right=of user,yshift=-0.75cm,text width=2.7cm] (plan) {Lịch trình\\\scriptsize tạo · chỉnh sửa · xóa · tải};
+    \node[goldbox,right=of plan,yshift=1.5cm,text width=2.5cm] (admin) {Quản trị viên\\\scriptsize xem người dùng};
+    \node[db,right=of plan,yshift=-1.2cm,text width=2.7cm] (data) {Dữ liệu địa điểm\\và lịch sử theo tài khoản};
+    \draw[arr] (user)--(auth);
+    \draw[arr] (user)--(plan);
+    \draw[arr] (admin)--(data);
+    \draw[arr] (plan)--(data);
+  \end{tikzpicture}
+  \vspace{0.35cm}
+  \begin{center}\small
+    Phân tách quyền giúp mỗi tài khoản chỉ xem và thao tác trên lịch sử của chính mình.
+  \end{center}
+\end{frame}
+
+% 7
+\begin{frame}{Kiến trúc tổng thể}
+  \centering
+  \begin{tikzpicture}[node distance=0.5cm and 0.72cm]
+    \node[box,text width=2.5cm] (web) {Frontend\\HTML · CSS · JavaScript};
+    \node[box,right=of web,text width=2.7cm] (api) {Backend API\\Python · FastAPI};
+    \node[box,above right=0.3cm and 0.75cm of api,text width=2.5cm] (ai) {Ollama\\diễn giải câu chat};
+    \node[db,below right=0.3cm and 0.75cm of api,text width=2.8cm] (db) {PostgreSQL / PostGIS\\tài khoản · địa điểm · plan};
+    \node[goldbox,right=of db,yshift=1.2cm,text width=2.5cm] (route) {OSRM tùy chọn\\tuyến đường};
+    \draw[arr] (web)--node[above,font=\scriptsize]{HTTP / JSON}(api);
+    \draw[arr] (api)--(ai);
+    \draw[arr] (api)--(db);
+    \draw[dashedarr] (api)--(route);
+  \end{tikzpicture}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item Backend điều phối nghiệp vụ, xác thực quyền và truy xuất dữ liệu.
+    \item AI hỗ trợ hiểu câu chat; địa điểm và giá phải lấy từ dữ liệu hệ thống.
+    \item Khi dịch vụ AI hoặc định tuyến không sẵn sàng, hệ thống có nhánh xử lý dự phòng.
+  \end{itemize}
+\end{frame}
+
+% 8
+\begin{frame}{Công nghệ sử dụng}
+  \small
+  \begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}p{3cm}X}
+    \toprule
+    Công nghệ & Vai trò & Lý do dùng trong đồ án\\
+    \midrule
+    HTML, CSS, JavaScript & Giao diện web & Xây dựng chat, trang kế hoạch, tài khoản và lịch sử.\\
+    Python, FastAPI & Backend / API & Tổ chức nghiệp vụ và cung cấp các tuyến API.\\
+    PostgreSQL, PostGIS & Cơ sở dữ liệu & Lưu tài khoản, địa điểm, vị trí và dữ liệu plan.\\
+    Ollama & Mô hình ngôn ngữ cục bộ & Hỗ trợ diễn giải yêu cầu tiếng Việt; có nhánh dự phòng.\\
+    Docker Compose & Môi trường chạy & Khởi chạy các dịch vụ phụ thuộc theo cấu hình dự án.\\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  \begin{alertblock}{Nguyên tắc thiết kế}
+    Chia tách giao diện, nghiệp vụ, dữ liệu và AI để dễ thay thế, cấu hình và kiểm tra từng phần.
+  \end{alertblock}
+\end{frame}
+
+% 9
+\begin{frame}{Mô hình dữ liệu khái quát}
+  \centering
+  \begin{tikzpicture}[node distance=0.7cm and 1.2cm]
+    \node[box,text width=2.7cm] (users) {\textbf{users}\\\scriptsize id · email · password\_hash · role};
+    \node[box,right=of users,text width=2.7cm] (plans) {\textbf{saved\_travel\_plans}\\\scriptsize id · user\_id · destination · plan};
+    \node[goldbox,below=of users,text width=2.7cm] (places) {\textbf{places}\\\scriptsize tên · địa chỉ · loại · giá};
+    \node[goldbox,right=of places,text width=2.7cm] (prices) {\textbf{price\_sources}\\\scriptsize giá trị · nguồn · thời điểm};
+    \draw[arr] (users)--node[above,font=\scriptsize]{1 : N}(plans);
+    \draw[arr] (places)--(prices);
+    \draw[dashedarr] (plans)--(places);
+  \end{tikzpicture}
+  \vspace{0.35cm}
+  \begin{itemize}
+    \item \texttt{user\_id} liên kết plan với chủ tài khoản.
+    \item Giá và vị trí là thuộc tính dữ liệu cần kiểm tra; thiếu giá không được hiểu thành giá bằng 0.
+    \item Sơ đồ trình bày các thực thể khái quát, không thay thế ERD đầy đủ của toàn bộ schema.
+  \end{itemize}
+\end{frame}
+
+% 10
+\begin{frame}{Luồng xử lý yêu cầu hội thoại}
+  \centering
+  \begin{tikzpicture}[node distance=0.36cm]
+    \node[box,text width=2.35cm] (a) {Câu chat tiếng Việt};
+    \node[box,right=of a,text width=2.35cm] (b) {Trích xuất\\đích · ngày · người · ngân sách};
+    \node[box,right=of b,text width=2.35cm] (c) {Kiểm tra đủ\\thông tin};
+    \node[goldbox,right=of c,text width=2.35cm] (d) {Tra cứu dữ liệu\\và lập lịch};
+    \node[box,below=0.45cm of c,text width=2.65cm] (e) {Hỏi bổ sung nếu còn thiếu};
+    \draw[arr] (a)--(b);
+    \draw[arr] (b)--(c);
+    \draw[arr] (c)--node[above,font=\scriptsize]{đủ}(d);
+    \draw[dashedarr] (c)--node[right,font=\scriptsize]{chưa đủ}(e);
+    \draw[dashedarr] (e.west) -| ([xshift=-0.1cm]a.south) -- (a.south);
+  \end{tikzpicture}
+  \vspace{0.5cm}
+  \begin{block}{Ví dụ đầu vào}
+    “Đà Lạt 3 ngày, 2 người, ngân sách 5 triệu, thích thiên nhiên và cà phê.”
+  \end{block}
+  {\small Mô hình ngôn ngữ chỉ giúp diễn giải; kết quả địa điểm được đối chiếu với cơ sở dữ liệu.}
+\end{frame}
+
+% 11
+\begin{frame}{Gợi ý địa điểm và sắp lịch}
+  \begin{columns}[T,onlytextwidth]
+    \column{.53\textwidth}
+      \begin{enumerate}
+        \item Lọc theo tỉnh/thành và loại địa điểm.
+        \item Ưu tiên nơi phù hợp sở thích.
+        \item Kiểm tra địa chỉ, giá và giờ hoạt động có sẵn.
+        \item Gom các điểm gần nhau để hạn chế đi lại.
+        \item Phân hoạt động vào các khung giờ trong ngày.
+      \end{enumerate}
+    \column{.43\textwidth}
+      \begin{tikzpicture}[node distance=0.35cm]
+        \node[box,text width=3.6cm] (pref) {Sở thích + địa bàn};
+        \node[box,below=of pref,text width=3.6cm] (filter) {Lọc dữ liệu hợp lệ};
+        \node[goldbox,below=of filter,text width=3.6cm] (rank) {Xếp hạng và gom cụm};
+        \node[box,below=of rank,text width=3.6cm] (slot) {Gán ngày và khung giờ};
+        \draw[arr] (pref)--(filter);
+        \draw[arr] (filter)--(rank);
+        \draw[arr] (rank)--(slot);
+      \end{tikzpicture}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{alertblock}{Điểm cần lưu ý}
+    Đây là bộ lọc và xếp hạng theo tiêu chí nghiệp vụ; không tuyên bố là mô hình học sâu đã huấn luyện.
+  \end{alertblock}
+\end{frame}
+
+% 12
+\begin{frame}{Ước tính ngân sách}
+  \begin{columns}[T,onlytextwidth]
+    \column{.54\textwidth}
+      \begin{block}{Công thức minh họa}
+        \[
+        C_{\text{chuyến}} =
+        C_{\text{lưu trú}}+
+        C_{\text{ăn uống}}+
+        C_{\text{tham quan}}+
+        C_{\text{di chuyển}}
+        \]
+        \[
+        C_{\text{lưu trú}} =
+        P_{\text{đêm}}\times(N_{\text{ngày}}-1)
+        \]
+      \end{block}
+      \small Với khoảng giá, hệ thống dùng mức giữa để ước lượng; giá đơn được dùng trực tiếp. Chi phí khách sạn nhân số đêm, không nhân số người theo quy tắc của đồ án.
+    \column{.42\textwidth}
+      \begin{block}{Ví dụ số học}
+        Khách sạn: 80.000--300.000 đ/đêm\\
+        Mức giữa: 190.000 đ/đêm\\
+        3 ngày = 2 đêm\\[2pt]
+        \textbf{Lưu trú dự kiến: 380.000 đ}
+      \end{block}
+      \scriptsize Ví dụ minh họa phép tính, không phải báo giá thực tế.
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{center}\small
+    Nếu thiếu giá, hiển thị “chưa đủ dữ liệu”; nếu vượt ngân sách, nêu rõ phần chênh lệch.
+  \end{center}
+\end{frame}
+
+% 13
+\begin{frame}{Đăng ký, đăng nhập và OTP}
+  \centering
+  \begin{tikzpicture}[node distance=0.65cm and 0.8cm]
+    \node[box,text width=2.4cm] (user) {Người dùng\\email · mật khẩu};
+    \node[box,right=of user,text width=2.4cm] (web) {Giao diện tài khoản};
+    \node[box,right=of web,text width=2.4cm] (api) {API xác thực};
+    \node[goldbox,right=of api,text width=2.4cm] (mail) {SMTP\\gửi mã OTP};
+    \draw[arr] (user)--node[above,font=\scriptsize]{đăng ký}(web);
+    \draw[arr] (web)--node[above,font=\scriptsize]{yêu cầu OTP}(api);
+    \draw[arr] (api)--node[above,font=\scriptsize]{gửi mã}(mail);
+    \draw[dashedarr] (mail.south) -- ++(0,-0.55) -| node[pos=0.25,below,font=\scriptsize]{nhập OTP}(web.south);
+    \draw[dashedarr] (web.south) -- ++(0,-0.95) -| node[pos=0.25,below,font=\scriptsize]{xác minh và tạo tài khoản}(api.south);
+  \end{tikzpicture}
+  \vspace{0.55cm}
+  \begin{itemize}
+    \item Mật khẩu được băm trước khi lưu; không hiển thị lại trong lịch sử hay giao diện.
+    \item OTP có thời hạn, giới hạn số lần thử và phụ thuộc cấu hình SMTP hoạt động.
+    \item Backend xác minh chủ sở hữu plan trước khi trả dữ liệu.
+  \end{itemize}
+\end{frame}
+
+% 14
+\begin{frame}{Kết quả giao diện: trò chuyện}
+  \begin{columns}[T,onlytextwidth]
+    \column{.64\textwidth}
+      \centering
+      \asset[width=\linewidth,height=0.73\textheight,keepaspectratio]{ui_chat.png}
+    \column{.34\textwidth}
+      \vspace{0.25cm}
+      \begin{block}{Vai trò}
+        Tiếp nhận yêu cầu tự do bằng tiếng Việt.
+      \end{block}
+      \begin{itemize}
+        \item Hiển thị hội thoại và phản hồi.
+        \item Người dùng có thể bổ sung sở thích hoặc yêu cầu chỉnh plan.
+        \item Thao tác gửi tin nhắn thuận tiện trên màn hình nhỏ.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+% 15
+\begin{frame}{Kết quả giao diện: tài khoản}
+  \begin{columns}[T,onlytextwidth]
+    \column{.58\textwidth}
+      \centering
+      \asset[width=\linewidth,height=0.76\textheight,keepaspectratio]{ui_login.png}
+    \column{.4\textwidth}
+      \begin{block}{Luồng tài khoản}
+        Đăng nhập bằng email và mật khẩu; đăng ký và khôi phục mật khẩu dùng xác minh OTP.
+      \end{block}
+      \begin{itemize}
+        \item Trang chính yêu cầu người dùng đăng nhập.
+        \item Plan và lịch sử được gắn theo tài khoản.
+        \item Quản trị viên có quyền xem thông tin đăng ký theo phân quyền.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+% 16
+\begin{frame}{Kết quả giao diện: lịch trình và ngân sách}
+  \begin{columns}[T,onlytextwidth]
+    \column{.65\textwidth}
+      \centering
+      \asset[width=\linewidth,height=0.74\textheight,keepaspectratio]{ui_plan_budget.png}
+    \column{.33\textwidth}
+      \begin{block}{Thông tin thể hiện}
+        Điểm đến, số ngày, số người, sở thích, chi phí và hoạt động theo ngày.
+      \end{block}
+      \begin{itemize}
+        \item Khoản lưu trú.
+        \item Tổng chi phí dự kiến.
+        \item Bình quân mỗi người.
+        \item Phần còn lại hoặc vượt ngân sách.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+% 17
+\begin{frame}{Kiểm chứng kỹ thuật}
+  \begin{columns}[T,onlytextwidth]
+    \column{.48\textwidth}
+      \begin{block}{Kiểm thử tự động}
+        \centering
+        {\Huge\color{travelgreen}\bfseries 37/37}\\
+        \small bài kiểm thử đạt trong lần chạy ghi nhận.
+      \end{block}
+      \begin{itemize}
+        \item Bao gồm kiểm tra bộ gợi ý và nghiệp vụ lập lịch.
+        \item Kiểm tra hồi quy các quy tắc chi phí và lọc địa điểm.
+      \end{itemize}
+    \column{.48\textwidth}
+      \begin{block}{Kiểm tra luồng API}
+        \centering
+        {\Large\color{travelgreen}\bfseries Đã kiểm tra}\\
+        \small tạo plan, phản hồi chat và tải PDF.
+      \end{block}
+      \begin{itemize}
+        \item PDF có ảnh địa điểm nhúng.
+        \item Smoke test ghi nhận dữ liệu địa điểm sẵn sàng trong môi trường Docker.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.15cm}
+  {\scriptsize\color{muted}Số liệu là kết quả lần chạy kiểm tra trong môi trường phát triển, không phải đánh giá hiệu năng tải hay thử nghiệm người dùng.}
+\end{frame}
+
+% 18
+\begin{frame}{Minh họa hành trình sử dụng}
+  \begin{center}
+    \begin{tikzpicture}[node distance=0.4cm]
+      \node[box,text width=2.35cm] (s1) {1. Đăng nhập};
+      \node[box,right=of s1,text width=2.35cm] (s2) {2. Gửi yêu cầu chuyến đi};
+      \node[box,right=of s2,text width=2.35cm] (s3) {3. Xem plan và ngân sách};
+      \node[goldbox,right=of s3,text width=2.35cm] (s4) {4. Lưu hoặc tải PDF};
+      \draw[arr] (s1)--(s2);
+      \draw[arr] (s2)--(s3);
+      \draw[arr] (s3)--(s4);
+    \end{tikzpicture}
+  \end{center}
+  \vspace{0.55cm}
+  \begin{block}{Ví dụ yêu cầu}
+    “Đà Nẵng 3 ngày, 2 người, ngân sách 5 triệu; ưu tiên thiên nhiên và cà phê.”
+  \end{block}
+  \begin{itemize}
+    \item Nếu thiếu thông tin quan trọng, trợ lý hỏi thêm thay vì tự điền tùy ý.
+    \item Người dùng có thể yêu cầu thêm sở thích, đổi nơi lưu trú hoặc tạo plan mới.
+    \item Kết quả được lưu trong lịch sử của tài khoản đang đăng nhập.
+  \end{itemize}
+\end{frame}
+
+% 19
+\begin{frame}{Hạn chế và hướng phát triển}
+  \begin{columns}[T,onlytextwidth]
+    \column{.48\textwidth}
+      \begin{block}{Hạn chế hiện tại}
+        \begin{itemize}
+          \item Độ chính xác phụ thuộc dữ liệu địa điểm, giá và giờ hoạt động.
+          \item Ước lượng chi phí không thay thế xác nhận từ nhà cung cấp.
+          \item Chất lượng gợi ý chưa được đánh giá bằng khảo sát diện rộng.
+          \item Triển khai công khai cần bổ sung HTTPS, SMTP và giám sát.
+        \end{itemize}
+      \end{block}
+    \column{.48\textwidth}
+      \begin{block}{Hướng phát triển}
+        \begin{itemize}
+          \item Chuẩn hóa địa chỉ và cập nhật nguồn giá định kỳ.
+          \item Tối ưu lựa chọn khi có ngân sách trần.
+          \item Đo mức phù hợp của gợi ý với người dùng.
+          \item Tăng độ ổn định cho PDF, kiểm thử và triển khai.
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+% 20
+\begin{frame}{Kết luận}
+  \begin{center}
+    {\LARGE\color{travelgreen}\bfseries Travel Path kết nối hội thoại, dữ liệu\\và lập lịch trình du lịch.}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item Hệ thống tiếp nhận nhu cầu, tìm dữ liệu phù hợp và tạo lịch theo ngày.
+    \item Chi phí được ước lượng theo quy tắc rõ ràng; thiếu dữ liệu được nêu riêng.
+    \item Tài khoản, lịch sử plan và PDF hoàn thiện luồng sử dụng cơ bản.
+  \end{itemize}
+  \vfill
+  \begin{block}{Tài liệu nền tảng tiêu biểu}
+    \scriptsize
+    FastAPI: \url{https://fastapi.tiangolo.com/}\\
+    PostgreSQL/PostGIS: \url{https://www.postgresql.org/docs/} \quad
+    OWASP Password Storage: \url{https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html}\\
+    Ollama API: \url{https://github.com/ollama/ollama/blob/main/docs/api.md}
+  \end{block}
+  \begin{center}\color{travelgold}\Large\bfseries Xin cảm ơn thầy và các bạn đã lắng nghe!\end{center}
+\end{frame}
+
+\end{document}
+
